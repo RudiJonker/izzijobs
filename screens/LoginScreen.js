@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { styles } from '../constants/styles';
+import theme from '../constants/theme';
 import supabase from '../supabase';
 
 export default function LoginScreen({ navigation, route }) {
@@ -28,14 +30,21 @@ export default function LoginScreen({ navigation, route }) {
           console.warn('No role found for user:', session.user.id);
         }
       }
-      setLoading(false); // Enable login after initial check
+      setLoading(false);
     };
     fetchUserRole();
   }, []);
 
   const handleLogin = async () => {
+    console.log('handleLogin called'); // Debug log
     if (loading) {
-      Alert.alert('Error', 'Please wait for initialization.');
+      console.log('Loading state active'); // Debug log
+      Alert.alert('Error', 'Please Wait for Initialization.'); // Capitalized and professional
+      return;
+    }
+    if (!email || !password) {
+      console.log('Fields missing:', { email, password }); // Debug log
+      Alert.alert('Error', 'Email and Password Are Required.'); // Custom check
       return;
     }
     console.log('Attempting login with userRole:', userRole);
@@ -44,7 +53,8 @@ export default function LoginScreen({ navigation, route }) {
       password,
     });
     if (error) {
-      Alert.alert('Login Failed', error.message);
+      console.log('Login error:', error.message); // Debug log
+      Alert.alert('Login Failed', error.message.charAt(0).toUpperCase() + error.message.slice(1) + '.'); // Capitalize Supabase message
     } else {
       console.log('Login successful, session data:', data.session);
       const { data: userData, error: roleError } = await supabase
@@ -54,7 +64,7 @@ export default function LoginScreen({ navigation, route }) {
         .single();
       if (roleError) {
         console.error('Error fetching role post-login:', roleError.message);
-        Alert.alert('Error', 'Could not fetch role. Please contact support.');
+        Alert.alert('Error', 'Could Not Fetch Role. Please Contact Support.'); // Capitalized
       } else if (userData.role) {
         setUserRole(userData.role);
         console.log('Set user role post-login:', userData.role);
@@ -64,20 +74,20 @@ export default function LoginScreen({ navigation, route }) {
           navigation.replace('Employer');
         }
       } else {
-        Alert.alert('Error', 'Role not set in user data. Please contact support.');
+        Alert.alert('Error', 'Role Not Set in User Data. Please Contact Support.'); // Capitalized
       }
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Login Screen</Text>
+    <View style={[styles.container, { marginTop: -20 }]}>
       <TextInput
         style={styles.input}
         value={email}
         onChangeText={setEmail}
         placeholder="Email"
         autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -85,33 +95,14 @@ export default function LoginScreen({ navigation, route }) {
         onChangeText={setPassword}
         placeholder="Password"
         secureTextEntry
+        keyboardType="email-address"
       />
-      <Button title="Login" onPress={handleLogin} disabled={loading} />
-      <Text style={styles.link} onPress={() => navigation.navigate('Signup')}>
-        Don't have an account? Sign Up
-      </Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        <Text style={{ color: '#fff', textAlign: 'center', padding: 10 }}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+        <Text style={styles.link}>Don't have an account? Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    margin: 10,
-    padding: 5,
-  },
-  link: {
-    color: '#48d22b',
-    marginTop: 10,
-    textDecorationLine: 'underline',
-  },
-});

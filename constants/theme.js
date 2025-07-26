@@ -5,6 +5,9 @@ export default {
     background: '#f5f5f5',
     text: '#333',
     error: '#b00020',
+    borderDefault: '#c5bfc3ff',    // Default gray border
+    borderAccent: '#ff4500', // Orange border (matches accent)
+    borderSuccess: '#48d22b', // Green border (matches primary)
   },
   fonts: {
     family: 'Roboto',

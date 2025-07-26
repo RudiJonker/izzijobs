@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { styles } from '../constants/styles';
+import theme from '../constants/theme';
 import supabase from '../supabase';
 
 export default function SignupScreen({ navigation }) {
@@ -11,8 +13,10 @@ export default function SignupScreen({ navigation }) {
   const [role, setRole] = useState('seeker');
 
   const handleSignup = async () => {
+    console.log('handleSignup called'); // Debug log
     if (!email || !password || !name || !phone || !location || !role) {
-      Alert.alert('Error', 'All fields are required.');
+      console.log('Fields missing:', { email, password, name, phone, location, role }); // Debug log
+      Alert.alert('Error', 'All Fields Are Required.'); // Capitalized and professional
       return;
     }
 
@@ -21,30 +25,32 @@ export default function SignupScreen({ navigation }) {
       password,
     });
     if (authError) {
-      Alert.alert('Signup Failed', authError.message);
+      console.log('Supabase error:', authError.message); // Debug log for exact message
+      Alert.alert('Signup Failed', authError.message.charAt(0).toUpperCase() + authError.message.slice(1) + '.'); // Capitalize Supabase message
     } else {
       const userId = data.user.id;
       const { error: dbError } = await supabase
         .from('users')
         .insert({ id: userId, role, name, email, phone, location });
       if (dbError) {
-        Alert.alert('Database Error', dbError.message);
+        console.log('Database error:', dbError.message); // Debug log for insert error
+        Alert.alert('Database Error', dbError.message.charAt(0).toUpperCase() + dbError.message.slice(1) + '.'); // Capitalize DB message
       } else {
-        Alert.alert('Success', 'Signup complete! Please log in.');
+        Alert.alert('Success', 'Signup Complete! Please Log In.'); // Capitalized and professional
         navigation.navigate('Login', { role });
       }
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Signup Screen</Text>
+    <View style={[styles.container, { paddingTop: 0, marginTop: -20 }]}>
       <TextInput
         style={styles.input}
         value={email}
         onChangeText={setEmail}
         placeholder="Email"
         autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -52,12 +58,14 @@ export default function SignupScreen({ navigation }) {
         onChangeText={setPassword}
         placeholder="Password"
         secureTextEntry
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
         value={name}
         onChangeText={setName}
         placeholder="Name"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -71,60 +79,28 @@ export default function SignupScreen({ navigation }) {
         value={location}
         onChangeText={setLocation}
         placeholder="Location"
+        keyboardType="email-address"
       />
-      <View style={styles.radioContainer}>
+      <View style={[styles.radioContainer, { marginTop: 20, marginBottom: 10 }]}>
         <TouchableOpacity
-          style={[styles.radioButton, role === 'seeker' && styles.selectedRadio]}
+          style={[styles.radioButton, role === 'seeker' && styles.radioSelected, { marginRight: 8 }]}
           onPress={() => setRole('seeker')}>
-          <Text>Job Seeker</Text>
+          <View style={styles.radioCircle} />
         </TouchableOpacity>
+        <Text>Job Seeker</Text>
         <TouchableOpacity
-          style={[styles.radioButton, role === 'employer' && styles.selectedRadio]}
+          style={[styles.radioButton, role === 'employer' && styles.radioSelected, { marginLeft: 20, marginRight: 8 }]}
           onPress={() => setRole('employer')}>
-          <Text>Employer</Text>
+          <View style={styles.radioCircle} />
         </TouchableOpacity>
+        <Text>Employer</Text>
       </View>
-      <Button title="Sign Up" onPress={handleSignup} />
-      <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
-        Already have an account? Log In
+      <TouchableOpacity style={styles.button} onPress={handleSignup}>
+        <Text style={{ color: '#fff', textAlign: 'center', padding: 10 }}>Sign Up</Text>
+      </TouchableOpacity>
+      <Text style={[styles.link, { marginTop: 20, marginBottom: 10 }]} onPress={() => navigation.navigate('Login')}>
+        <Text>Already have an account? Log In</Text>
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    margin: 10,
-    padding: 5,
-  },
-  radioContainer: {
-    flexDirection: 'row',
-    margin: 10,
-  },
-  radioButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  selectedRadio: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  link: {
-    color: '#007AFF',
-    marginTop: 10,
-    textDecorationLine: 'underline',
-  },
-});
