@@ -146,7 +146,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     width: Dimensions.get('window').width,
     position: 'absolute',
-    top: 0,
+    top: 50,
+    
     left: 0,
     zIndex: 1,
   },
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 10,
-    paddingTop: 70,
+    paddingTop: 120,
   },
   row: {
     flexDirection: 'row',
