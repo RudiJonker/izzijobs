@@ -39,9 +39,9 @@ export default function LoginScreen({ navigation }) {
         const role = userData.role;
         console.log('User role:', role);
         if (role === 'seeker') {
-          navigation.navigate('Seeker', { role: 'seeker' });
+          navigation.replace('Seeker');
         } else if (role === 'employer') {
-          navigation.navigate('Employer', { role: 'employer' });
+          navigation.replace('Employer');
         } else {
           Alert.alert('Error', 'Invalid user role.');
         }
@@ -57,10 +57,10 @@ export default function LoginScreen({ navigation }) {
     >
       <View style={styles.container}>
         <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+                source={require('../assets/logo.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
         <Text style={styles.title}>Izzijobs</Text>
         <TextInput
           style={styles.input}
@@ -71,13 +71,14 @@ export default function LoginScreen({ navigation }) {
           keyboardType="email-address"
         />
         <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          secureTextEntry
-          keyboardType="email-address"
-        />
+  style={styles.input}
+  value={password}
+  onChangeText={setPassword}
+  placeholder="Password"
+  secureTextEntry={true}
+  autoCapitalize="none"
+/>
+
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={{ color: '#fff', textAlign: 'center', padding: 10 }}>Log In</Text>
         </TouchableOpacity>

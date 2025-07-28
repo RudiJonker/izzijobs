@@ -14,8 +14,8 @@ export default function AppNavigator() {
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Seeker" component={SeekerNavigator} />
-      <Stack.Screen name="Employer" component={EmployerNavigator} />
+      <Stack.Screen name="Seeker" component={SeekerNavigator} options={{ headerShown: true }} />
+      <Stack.Screen name="Employer" component={EmployerNavigator} options={{ headerShown: true }} />
     </Stack.Navigator>
   );
 }
