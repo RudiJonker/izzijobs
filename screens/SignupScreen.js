@@ -11,7 +11,7 @@ export default function SignupScreen({ navigation }) {
   const [role, setRole] = useState('seeker');
 
   const handleSignup = async () => {
-    console.log('handleSignup called');
+    console.log('handleSignup called with role:', role);
     if (!email || !password || !name || !phone || !role) {
       console.log('Fields missing:', { email, password, name, phone, role });
       Alert.alert('Error', 'All Fields Are Required.');
@@ -23,10 +23,11 @@ export default function SignupScreen({ navigation }) {
       password,
     });
     if (authError) {
-      console.log('Supabase error:', authError.message);
+      console.log('Supabase auth error:', authError.message);
       Alert.alert('Signup Failed', authError.message.charAt(0).toUpperCase() + authError.message.slice(1) + '.');
     } else {
       const userId = data.user.id;
+      console.log(`New user signed up as ${role} with ID:`, userId);
       const { error: dbError } = await supabase
         .from('users')
         .insert({ id: userId, role, name, email, phone });
@@ -34,6 +35,7 @@ export default function SignupScreen({ navigation }) {
         console.log('Database error:', dbError.message);
         Alert.alert('Database Error', dbError.message.charAt(0).toUpperCase() + dbError.message.slice(1) + '.');
       } else {
+        console.log('User data inserted successfully for role:', role);
         Alert.alert('Success', 'Signup Complete! Please Log In.');
         navigation.navigate('Login', { role });
       }
@@ -41,10 +43,7 @@ export default function SignupScreen({ navigation }) {
   };
 
   return (
-    <ScrollView
-      keyboardShouldPersistTaps='handled'
-      style={{ flex: 1, backgroundColor: '#fff' }}
-    >
+    <ScrollView keyboardShouldPersistTaps='handled' style={{ flex: 1, backgroundColor: '#fff' }}>
       <View style={{ padding: 20 }}>
         <TextInput
           style={styles.input}
@@ -74,7 +73,7 @@ export default function SignupScreen({ navigation }) {
           placeholder='Phone'
           keyboardType='phone-pad'
         />
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 0 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
           <TouchableOpacity
             style={[styles.radioButton, role === 'seeker' && styles.radioSelected]}
             onPress={() => setRole('seeker')}
@@ -91,7 +90,7 @@ export default function SignupScreen({ navigation }) {
           <Text>Employer</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={{ color: '#fff', textAlign: 'center' , padding: 10}}>Sign Up</Text>
+          <Text style={{ color: '#fff', textAlign: 'center', padding: 10 }}>Sign Up</Text>
         </TouchableOpacity>
         <Text
           style={[styles.link, { textAlign: 'center', marginBottom: 20 }]}

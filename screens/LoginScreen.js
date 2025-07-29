@@ -8,7 +8,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    console.log('handleLogin called');
+    console.log('handleLogin called with email:', email);
     if (!email || !password) {
       console.log('Fields missing:', { email, password });
       Alert.alert('Error', 'Email and Password are required.');
@@ -21,10 +21,10 @@ export default function LoginScreen({ navigation }) {
     });
 
     if (error) {
-      console.log('Supabase error:', error.message);
+      console.log('Supabase auth error:', error.message);
       Alert.alert('Login Failed', error.message.charAt(0).toUpperCase() + error.message.slice(1) + '.');
     } else {
-      console.log('Login successful, fetching user role');
+      console.log('Supabase login successful for user ID:', data.user.id);
       const userId = data.user.id;
       const { data: userData, error: dbError } = await supabase
         .from('users')
@@ -33,12 +33,16 @@ export default function LoginScreen({ navigation }) {
         .single();
 
       if (dbError) {
-        console.log('Database error:', dbError.message);
+        console.log('Database error fetching role:', dbError.message);
         Alert.alert('Error', 'Could not fetch user role.');
       } else {
         const role = userData.role;
-        console.log('User role:', role);
-        navigation.replace('Main', { role });
+        console.log(`User logged in as ${role} with ID:`, userId);
+        console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} directed to homepage`);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main', params: { role } }],
+        });
       }
     }
   };
