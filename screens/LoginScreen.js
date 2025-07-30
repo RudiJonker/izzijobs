@@ -40,9 +40,9 @@ export default function LoginScreen({ navigation }) {
         console.log(`User logged in as ${role} with ID:`, userId);
         console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} directed to homepage`);
         navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main', params: { role } }],
-        });
+  index: 0,
+  routes: [{ name: 'Main', params: { role: 'employer' } }],
+});
       }
     }
   };

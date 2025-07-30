@@ -13,6 +13,7 @@ export default function EmployerProfileScreen() {
   const [phone, setPhone] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [profilePic, setProfilePic] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
     try {
@@ -52,7 +53,7 @@ export default function EmployerProfileScreen() {
             }
           } else {
             console.log('No profile picture found, using default');
-            setProfilePic(null); // Ensure default avatar is used
+            setProfilePic(null);
           }
         }
       } else {
@@ -62,6 +63,8 @@ export default function EmployerProfileScreen() {
     } catch (error) {
       console.log('fetchUserData error:', error.message);
       Alert.alert('Error', 'Failed to fetch user data: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,10 +75,10 @@ export default function EmployerProfileScreen() {
 
   const handleImagePick = async () => {
     console.log('Image pick triggered');
-    console.log('ImagePicker module:', ImagePicker);
+    console.log('ImagePicker module:', ImagePicker, Object.keys(ImagePicker));
     try {
       if (!ImagePicker.requestMediaLibraryPermissionsAsync) {
-        console.log('ImagePicker module missing');
+        console.log('ImagePicker module missing methods:', Object.keys(ImagePicker));
         Alert.alert('Error', 'Image picker module not available.');
         return;
       }
@@ -210,6 +213,8 @@ export default function EmployerProfileScreen() {
       Alert.alert('Error', 'Failed to logout: ' + error.message);
     }
   };
+
+  if (loading) return <Text>Loading...</Text>;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
